@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>My Recipes</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"> <!-- Links Flask to CSS -->
+    </head>
+
+    <body>
+        <h1>My Recipes</h1>
+        <a href="/add">Add New Recipe</a>
+
+        <div class="grid">
+            {% for recipe in recipes %}
+                <a href="/recipe/{{ recipe.id }}" class="card">
+                    <img src="{{ recipe.image_url }}" alt="{{ recipe.title }}">
+                    <h2>{{ recipe.title }}</h2>
+                </a>
+            {% endfor %}
+        </div>
+
+        <h1>Saved Recipes</h1>
+
+        <div class="recipe-grid">
+            {% for r in recipes %}
+                <a class="recipe-card" href="/recipe/{{ r.id }}">
+                    <div class="image-wrapper">
+                        {% if r.image_url %}
+                            <img src="{{ r.image_url }}" alt="{{ r.title }}">
+                        {% else %}
+                            <div class="placeholder"></div>
+                        {% endif %}
+                        <div class="overlay">
+                            <h3>{{ r.title }}</h3>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+
+
+    </body>
+
+</html>

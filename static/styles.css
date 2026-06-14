@@ -1,0 +1,74 @@
+/* Grid Style */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.card {
+    display: block;
+    text-decoration: none;
+    color: white;
+    border: 1px solid #f3de9c;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f3fde3
+}
+
+.card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.card h2 {
+    padding: 10px;
+    font-size: 1.2rem;
+}
+
+.recipe-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.recipe-card {
+    text-decoration: none;
+    color: white;
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 180px;
+}
+
+.image-wrapper img,
+.placeholder {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.placeholder {
+    background: #ccc;
+}
+
+.overlay {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0));
+}
+
+.overlay h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}

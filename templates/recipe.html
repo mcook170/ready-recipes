@@ -1,0 +1,19 @@
+<h1>{{ recipe.title }}</h1>
+
+{% if recipe.image_url %}
+    <img src="{{ recipe.image_url }}" alt="{{ recipe.title }}" style="max-width: 400px;">
+{% endif %}
+
+<h2>Ingredients</h2>
+<ul>
+    {% for item in recipe.ingredients %}
+        <li>{{ item }}</li>
+    {% endfor %}
+</ul>
+
+<h2>Instructions</h2>
+<ol>
+    {% for step in recipe.instructions %}
+        <li>{{ step }}</li>
+    {% endfor %}
+</ol>
