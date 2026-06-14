@@ -30,3 +30,9 @@ def get_recipe(id):
     row = cur.fetchone()
     conn.close()
     return row
+
+CREATE TABLE recipes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT,
+    content TEXT
+);
