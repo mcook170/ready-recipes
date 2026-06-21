@@ -1,43 +1,58 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>My Recipes</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"> <!-- Links Flask to CSS -->
-    </head>
+{% include 'navbar.html' %}
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css')}}">
 
-    <body>
-        <h1>My Recipes</h1>
-        <a href="/add">Add New Recipe</a>
+<div class="container">
 
-        <div class="grid">
-            {% for recipe in recipes %}
-                <a href="/recipe/{{ recipe.id }}" class="card">
-                    <img src="{{ recipe.image_url }}" alt="{{ recipe.title }}">
-                    <h2>{{ recipe.title }}</h2>
-                </a>
-            {% endfor %}
-        </div>
+    {% if search_query %}
+        <h1 class="section-title">Search Results for "{{ search_query }}"</h1>
+    {% else %}
+        <h1 class="section-title">My Recipes</h1>
+    {% endif %}
+        
+    <form action="/search" method="GET" class="search-bar">
+        <input 
+            type="text" 
+            name="q" 
+            placeholder="Search recipes..." 
+            value="{{ request.args.get('q', '') }}"
+        >
+        <button type="submit">Search</button>
+    </form>
 
-        <h1>Saved Recipes</h1>
-
-        <div class="recipe-grid">
-            {% for r in recipes %}
-                <a class="recipe-card" href="/recipe/{{ r.id }}">
-                    <div class="image-wrapper">
-                        {% if r.image_url %}
-                            <img src="{{ r.image_url }}" alt="{{ r.title }}">
-                        {% else %}
-                            <div class="placeholder"></div>
-                        {% endif %}
-                        <div class="overlay">
-                            <h3>{{ r.title }}</h3>
-                        </div>
+    <div class="grid">
+        {% for r in recipes %}
+            <a class="recipe-card" href="/recipe/{{ r[0] }}">
+                <div class="image-wrapper">
+                    {% if r[2] %}
+                        <div class="recipe-image-bg" style="background-image: url('{{ r[2] }}');"></div>
+                    {% else %}
+                        <div class="placeholder"></div>
+                    {% endif %}
+                    <div class="overlay">
+                        <h3>{{ r[1] }}</h3>
                     </div>
-                </a>
-            {% endfor %}
-        </div>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
 
+    <h1 class="section-title">Favorited Recipes</h1>
 
-    </body>
+    <div class="grid">
+        {% for r in favorites %}
+            <a class="recipe-card" href="/recipe/{{ r[0] }}">
+                <div class="image-wrapper">
+                    {% if r[2] %}
+                        <div class="recipe-image-bg" style="background-image: url('{{ r[2] }}');"></div>
+                    {% else %}
+                        <div class="placeholder"></div>
+                    {% endif %}
+                    <div class="overlay">
+                        <h3>{{ r[1] }}</h3>
+                    </div>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
 
-</html>
+</div>

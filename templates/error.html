@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Error</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css')}}">
+</head>
+<body>
+    <nav class="navbar">
+        <h2 class="logo">My Recipes</h2>
+        <a href="/" class="nav-link">Home</a>
+        <a href="/add" class="nav-link">Add Recipe</a>
+    </nav>
+
+    <h1>Error Importing Recipe</h1>
+    <p>{{ message }}</p>
+
+    <br>
+    <a href="/">Back to Home</a>
+</body>
+
+<footer class="footer">
+    <p>© 2026 My Recipes</p>
+</footer>
+
+</html>

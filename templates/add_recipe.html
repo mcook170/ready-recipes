@@ -1,19 +1,50 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Add Recipe</title>
-</head>
-<body>
-    <h1>Import Recipe</h1>
+{% include 'navbar.html' %}
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css')}}">
 
-    <form method="POST">
-        <label>Recipe URL:</label><br>
-        <input type="text" name="url" required><br><br>
+<div class="container">
 
-        <button type="submit">Import Recipe</button>
+    <h1 class="section-title">Add a New Recipe</h1>
+
+    <!-- ===== URL Import Form ===== -->
+    <form action="/add" method="POST" class="add-form">
+        <label>Import From URL</label>
+        <input type="text" name="url" placeholder="https://example.com/recipe" required>
+
+        <button type="submit" class="add-btn">Import Recipe</button>
     </form>
 
-    <br>
-    <a href="/">Back to Home</a>
-</body>
-</html>
+    <hr style="margin: 40px 0; border: none; border-top: 1px solid #e6dccf;">
+
+    <!-- ===== Manual Entry Form ===== -->
+    <form action="/add_manual" method="POST" class="add-form">
+
+        <label>Title</label>
+        <input type="text" name="title" required>
+
+        <label>Image URL</label>
+        <input type="text" name="image_url">
+
+        <label>Ingredients (one per line)</label>
+        <textarea name="ingredients"></textarea>
+
+        <label>Instructions (one per line)</label>
+        <textarea name="instructions"></textarea>
+
+        <label>Category</label>
+        <select name="category">
+            <option value="Breakfast">Breakfast</option>
+            <option value="Lunch">Lunch</option>
+            <option value="Dinner">Dinner</option>
+            <option value="Snacks">Snacks</option>
+            <option value="Dessert">Dessert</option>
+            <option value="Drinks">Drinks</option>
+        </select>
+
+        <label>Notes (optional)</label>
+        <textarea name="notes" placeholder="Personal notes, tips, substitutions, etc."></textarea>
+
+        <button type="submit" class="add-btn">Add Recipe Manually</button>
+
+    </form>
+
+</div>

@@ -1,19 +1,53 @@
-<h1>{{ recipe.title }}</h1>
+{% include 'navbar.html' %}
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css')}}">
 
-{% if recipe.image_url %}
-    <img src="{{ recipe.image_url }}" alt="{{ recipe.title }}" style="max-width: 400px;">
-{% endif %}
+<div class="container recipe-page">
 
-<h2>Ingredients</h2>
-<ul>
-    {% for item in recipe.ingredients %}
-        <li>{{ item }}</li>
-    {% endfor %}
-</ul>
+    <div class="recipe-header">
+        <h1>{{ recipe.title }}</h1>
 
-<h2>Instructions</h2>
-<ol>
-    {% for step in recipe.instructions %}
-        <li>{{ step }}</li>
-    {% endfor %}
-</ol>
+        <!-- Favorite Button -->
+        <form action="/favorite/{{ recipe.id }}" method="POST" class="favorite-form">
+        <button class="favorite-btn">
+            {% if recipe.is_favorite %}
+                ★
+            {% else %}
+                ☆
+            {% endif %}
+        </button>
+        </form>
+    </div>
+
+    {% if recipe.image_url %}
+        <img class="recipe-image" src="{{ recipe.image_url }}" alt="{{ recipe.title }}">
+    {% endif %}
+
+    <!-- Ingredients -->
+    <h2 class="recipe-section">Ingredients</h2>
+    <ul>
+        {% for item in recipe.ingredients %}
+            <li>{{ item|fix_spacing }}</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Instructions -->
+    <h2 class="recipe-section">Instructions</h2>
+    <ol>
+        {% for step in recipe.instructions %}
+            <li>{{ step|fix_spacing }}</li>
+        {% endfor %}
+    </ol>
+
+    <!-- Notes Section -->
+    <h2 class="recipe-section">Your Notes</h2>
+
+    <form action="/update_notes/{{ recipe.id }}" method="POST" class="add-form">
+        <textarea name="notes" placeholder="Write your notes here...">{{ recipe.notes }}</textarea>
+        <button type="submit" class="add-btn">Save Notes</button>
+    </form>
+
+    <h2>Category</h2>
+    <p>{{ recipe.category }}</p>
+
+
+</div>

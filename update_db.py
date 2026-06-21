@@ -1,16 +1,12 @@
 import sqlite3
 
-# CHANGE THIS to your actual database filename
-db_path = "recipes.db"
+from database import connect
 
-conn = sqlite3.connect(db_path)
-cursor = conn.cursor()
+def add_favorite_column():
+    conn = connect()
+    cur = conn.cursor()
+    cur.execute("ALTER TABLE recipes ADD COLUMN category TEXT")
+    conn.commit()
+    conn.close()
 
-# Add new columns
-cursor.execute("ALTER TABLE recipes ADD COLUMN ingredients TEXT;")
-cursor.execute("ALTER TABLE recipes ADD COLUMN instructions TEXT;")
-
-conn.commit()
-conn.close()
-
-print("Database updated successfully!")
+add_favorite_column()

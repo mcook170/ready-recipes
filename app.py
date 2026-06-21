@@ -1,54 +1,126 @@
 from flask import Flask, render_template, request, redirect
-from utils.extractor import extract_recipe
-from database import save_recipe, get_all_recipes, get_recipe
+import sqlite3
+import json
+from utils.extractor import extract_recipe, normalize_text   # your existing scraper
+import database as db               # your database.py
 
 app = Flask(__name__)
 
+
+@app.template_filter('fix_spacing')
+def fix_spacing(value):
+    return normalize_text(value)
+
+
+# -----------------------------
+# HOME PAGE
+# -----------------------------
 @app.route("/")
 def index():
-    recipes = get_all_recipes()
-    return render_template("index.html", recipes=recipes)
+    recipes = db.get_all_recipes()
+    favorites = db.get_favorited_recipes()
+    return render_template("index.html", recipes=recipes, favorites=favorites, search_query=None)
 
-@app.route("/add", methods=["GET", "POST"])
+
+# -----------------------------
+# SEARCH
+# -----------------------------
+@app.get("/search")
+def search():
+    q = request.args.get("q", "")
+    results = db.search_recipes(q)
+    favorites = db.get_favorited_recipes()
+
+    return render_template(
+        "index.html",
+        recipes=results,
+        favorites=favorites,
+        search_query=q
+    )
+
+
+# -----------------------------
+# VIEW SINGLE RECIPE
+# -----------------------------
+@app.route("/recipe/<int:id>")
+def recipe(id):
+    recipe = db.get_recipe(id)
+    return render_template("recipe.html", recipe=recipe)
+
+
+# -----------------------------
+# FAVORITE TOGGLE
+# -----------------------------
+@app.post("/favorite/<int:id>")
+def favorite(id):
+    conn = sqlite3.connect("recipes.db")
+    cur = conn.cursor()
+
+    cur.execute("UPDATE recipes SET is_favorite = 1 - is_favorite WHERE id = ?", (id,))
+    conn.commit()
+    conn.close()
+
+    return redirect(f"/recipe/{id}")
+
+
+# -----------------------------
+# ADD RECIPE — URL IMPORT
+# -----------------------------
+@app.post("/add")
 def add_recipe():
-    if request.method == "GET":
-        return render_template("add_recipe.html")
-    
-    url = request.form["url"]
+    url = request.form.get("url")
 
-    # Scrape the recipe
+    if not url:
+        return redirect("/add_recipe")
+
     scraped = extract_recipe(url)
 
-    if not scraped or "title" not in scraped:
-        return render_template("error.html", message="Could not extract recipe from this URL")
+    if scraped is None:
+        return "Error: Could not scrape recipe."
 
-    # Extract fields
     title = scraped.get("title")
+    image_url = scraped.get("image_url")
     ingredients = scraped.get("ingredients", [])
     instructions = scraped.get("instructions", [])
-    image_url = scraped.get("image_url")  # <-- IMPORTANT
 
-    # Combine instructions into a text block (optional)
-    content = "\n".join(instructions)
-
-    # Save to database
-    save_recipe(
-        title=title,
-        content=content,
-        image_url=image_url,
-        ingredients=ingredients,
-        instructions=instructions
-    )
+    db.save_recipe(title, image_url, ingredients, instructions)
 
     return redirect("/")
 
 
+# -----------------------------
+# ADD RECIPE — MANUAL ENTRY
+# -----------------------------
+@app.post("/add_manual")
+def add_manual():
+    title = request.form.get("title")
+    image_url = request.form.get("image_url")
+    ingredients = request.form.get("ingredients", "").split("\n")
+    instructions = request.form.get("instructions", "").split("\n")
+    category = request.form.get("category")
+    notes = request.form.get("notes", "")
+    db.save_recipe(title, image_url, ingredients, instructions, notes, category)
+    return redirect("/")
 
-@app.route("/recipe/<int:id>")
-def recipe(id):
-    recipe = get_recipe(id)
-    print("Loaded Recipe: ", recipe)  # FIXME: Debugging statement
-    return render_template("recipe.html", recipe=recipe)
 
+# -----------------------------
+# ADD RECIPE PAGE
+# -----------------------------
+@app.route("/add_recipe")
+def add_recipe_page():
+    return render_template("add_recipe.html")
+
+# -----------------------------
+# UPDATE NOTES
+# -----------------------------
+@app.post("/update_notes/<int:id>")
+def update_notes(id):
+    notes = request.form.get("notes", "")
+    db.update_notes(id, notes)
+    return redirect(f"/recipe/{id}")
+
+# -----------------------------
+# RUN APP
+# -----------------------------
 if __name__ == "__main__":
     app.run(debug=True)
